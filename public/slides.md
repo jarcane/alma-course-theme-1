@@ -16,12 +16,12 @@ SQL is a structured language for querying and modifying databases.
 
 Data is represented as tables, like this:
 
-| id  | name           | job                | alive | employer  |
-| --- | -------------- | ------------------ | ----- | --------- |
-| 1   | Annaia Danvers | Programmer         | true  | Siili     |
-| 2   | Brian Cox      | Physicist          | true  | null      |
-| 3   | John McCarthy  | Computer Scientist | false | MIT       |
-| 4   | Sy Brand       | Programmer         | true  | Microsoft |
+| id  | name           | job                | alive | employer |
+| --- | -------------- | ------------------ | ----- | -------- |
+| 1   | Annaia Danvers | Programmer         | true  | Siili    |
+| 2   | Lisa Randall   | Physicist          | true  | null     |
+| 3   | Grace Hopper   | Computer Scientist | false | US Navy  |
+| 4   | Steve Klabnik  | Programmer         | true  | Oxide    |
 
 ^^^^
 
@@ -78,9 +78,9 @@ Returns:
 | name           | job                |
 | -------------- | ------------------ |
 | Annaia Danvers | Programmer         |
-| Brian Cox      | Physicist          |
-| John McCarthy  | Computer Scientist |
-| Sy Brand       | Programmer         |
+| Lisa Randall   | Physicist          |
+| Grace Hopper   | Computer Scientist |
+| Steve Klabnik  | Programmer         |
 
 ^^^^
 
@@ -98,9 +98,9 @@ WHERE job = 'physicist'
 
 Returns:
 
-| id  | name      |
-| --- | --------- |
-| 2   | Brian Cox |
+| id  | name         |
+| --- | ------------ |
+| 2   | Lisa Randall |
 
 ^^^^
 
@@ -131,9 +131,9 @@ WHERE employer IS NULL
 
 Result:
 
-| id  | name      |
-| --- | --------- |
-| 2   | Brian Cox |
+| id  | name         |
+| --- | ------------ |
+| 2   | Lisa Randall |
 
 ^^^^
 
@@ -148,11 +148,11 @@ WHERE employer IS NOT NULL
 
 Result:
 
-| name           | employer  |
-| -------------- | --------- |
-| Annaia Danvers | Siili     |
-| John McCarthy  | MIT       |
-| Sy Brand       | Microsoft |
+| name           | employer |
+| -------------- | -------- |
+| Annaia Danvers | Siili    |
+| Grace Hopper   | US Navy  |
+| Steve Klabnik  | Oxide    |
 
 ^^^^
 
@@ -167,9 +167,9 @@ WHERE alive IS FALSE
 
 Results in:
 
-| id  | name          |
-| --- | ------------- |
-| 3   | John McCarthy |
+| id  | name         |
+| --- | ------------ |
+| 3   | Grace Hopper |
 
 ^^^^
 
@@ -187,8 +187,8 @@ Result:
 | id  | name           |
 | --- | -------------- |
 | 1   | Annaia Danvers |
-| 3   | John McCarthy  |
-| 4   | Sy Brand       |
+| 3   | Grace Hopper   |
+| 4   | Steve Klabnik  |
 
 ^^^^
 
@@ -205,10 +205,10 @@ WHERE id BETWEEN 2 AND 3
 
 Result:
 
-| id  | name          | job                | alive | employer |
-| --- | ------------- | ------------------ | ----- | -------- |
-| 2   | Brian Cox     | Physicist          | true  | null     |
-| 3   | John McCarthy | Computer Scientist | false | MIT      |
+| id  | name         | job                | alive | employer |
+| --- | ------------ | ------------------ | ----- | -------- |
+| 2   | Lisa Randal  | Physicist          | true  | null     |
+| 3   | Grace Hopper | Computer Scientist | false | US Navy  |
 
 ^^^^
 
@@ -244,10 +244,10 @@ Result:
 
 | name           | job                |
 | -------------- | ------------------ |
-| John McCarthy  | Computer Scientist |
-| Brian Cox      | Physicist          |
+| Grace Hopper   | Computer Scientist |
+| Lisa Randall   | Physicist          |
 | Annaia Danvers | Programmer         |
-| Sy Brand       | Programmer         |
+| Steve Klabnik  | Programmer         |
 
 ^^^^
 
@@ -342,15 +342,54 @@ Result:
 
 # Relations
 
+Of course the most powerful part of databases is they are _relational_. Through the use of several different methods
+we can cross reference data between tables in a single query. To demonstrate we're gonna add a new table we'll call _publications_:
 
+| id  | title                         | year | author_id |
+| --- | ----------------------------- | ---- | --------- |
+| 1   | The Rust Programming Language | 2018 | 4         |
+| 2   | Understanding Computers       | 1987 | 3         |
+| 3   | Higgs Discovery               | 2013 | 2         |
+| 4   | Warped Passages               | 2005 | 2         |
 
 ^^^^
 
 # Nesting SELECT
 
+The result of a SELECT can be used as a value within another SELECT query.
+
+Example:
+
+```
+SELECT name, job FROM people
+WHERE id=(SELECT author_id FROM publications WHERE title='The Rust Programming Language')
+```
+
+Result:
+
+| name          | job        |
+| ------------- | ---------- |
+| Steve Klabnik | Programmer |
+
 ^^^^
 
 # JOIN
+
+There's a much easier way to do many things you might do with nested SELECT: JOINs.
+
+Example:
+
+```
+SELECT people.name, people.job FROM people
+JOIN publications ON people.id = publications.author_id
+WHERE publications.title = 'The Rust Programming Language'
+```
+
+Result:
+
+| people.name   | people.job |
+| ------------- | ---------- |
+| Steve Klabnik | Programmer |
 
 ^^^^
 
@@ -391,4 +430,3 @@ Slides & Presentation by Annaia Danvers
 ![](https://media.giphy.com/media/Xj1GHC7mXPquY/giphy.gif)
 
 Site powered by [Glitch.com](https://glitch.com)
-
