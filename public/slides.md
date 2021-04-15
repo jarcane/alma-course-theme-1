@@ -72,7 +72,7 @@ For example:
 
 ```
 SELECT name, job
-FROM people
+FROM people;
 ```
 
 Returns:
@@ -95,7 +95,7 @@ For example:
 ```
 SELECT id, name
 FROM people
-WHERE job = 'physicist'
+WHERE job = 'physicist';
 ```
 
 Returns:
@@ -128,7 +128,7 @@ You can check for NULL with IS, in the form like:
 
 ```
 SELECT id, name FROM people
-WHERE employer IS NULL
+WHERE employer IS NULL;
 ```
 
 Result:
@@ -145,7 +145,7 @@ IS can also be used with NOT:
 
 ```
 SELECT name, employer FROM people
-WHERE employer IS NOT NULL
+WHERE employer IS NOT NULL;
 ```
 
 Result:
@@ -164,7 +164,7 @@ IS can also be used to check for TRUE and FALSE with BOOLEAN columns:
 
 ```
 SELECT id, name FROM people
-WHERE alive IS FALSE
+WHERE alive IS FALSE;
 ```
 
 Results in:
@@ -181,7 +181,7 @@ IN let's you check for the presence of a value within an array:
 
 ```
 SELECT id, name FROM people
-WHERE job IN ('Programmer', 'Computer Scientist')
+WHERE job IN ('Programmer', 'Computer Scientist');
 ```
 
 Result:
@@ -202,7 +202,7 @@ The begin and end values are inclusive.
 
 ```
 SELECT * FROM people
-WHERE id BETWEEN 2 AND 3
+WHERE id BETWEEN 2 AND 3;
 ```
 
 Result:
@@ -239,7 +239,7 @@ For example:
 
 ```
 SELECT name, job FROM people
-ORDER BY job ASC
+ORDER BY job ASC;
 ```
 
 Result:
@@ -261,7 +261,7 @@ It can also be used as COUNT(\*) to simply count the number of rows in the whole
 Example:
 
 ```
-SELECT COUNT(*) FROM people WHERE job = 'Programmer'
+SELECT COUNT(*) FROM people WHERE job = 'Programmer';
 ```
 
 Result:
@@ -277,7 +277,7 @@ Result:
 COUNT ignores NULL results from a column. So for example if we want to find how many people in our table have an employer:
 
 ```
-SELECT COUNT(employer) FROM people
+SELECT COUNT(employer) FROM people;
 ```
 
 Result:
@@ -297,7 +297,7 @@ For example:
 
 ```
 SELECT job, COUNT(*) FROM people
-GROUP BY job
+GROUP BY job;
 ```
 
 Result:
@@ -329,7 +329,7 @@ The DISTINCT keyword can be appended to SELECT to only return unique examples of
 Example:
 
 ```
-SELECT DISTINCT job FROM people
+SELECT DISTINCT job FROM people;
 ```
 
 Result:
@@ -365,7 +365,7 @@ Example:
 ```
 SELECT name, job FROM people
 WHERE id=(SELECT author_id FROM publications
-          WHERE title='The Rust Programming Language')
+          WHERE title='The Rust Programming Language');
 ```
 
 Result:
@@ -385,7 +385,7 @@ Example:
 ```
 SELECT people.name, people.job FROM people
 JOIN publications ON people.id = publications.author_id
-WHERE publications.title = 'The Rust Programming Language'
+WHERE publications.title = 'The Rust Programming Language';
 ```
 
 Result:
@@ -405,7 +405,7 @@ Example:
 ```
 SELECT publications.title, publications.year, people.name
 FROM publications
-JOIN people ON publications.author_id = people.id
+JOIN people ON publications.author_id = people.id;
 ```
 
 Result:
@@ -493,7 +493,7 @@ Example:
 
 ```
 INSERT INTO people (name, job, alive)
-VALUES ('Bozo','Clown',TRUE)
+VALUES ('Bozo','Clown',TRUE);
 ```
 
 ^^^^
