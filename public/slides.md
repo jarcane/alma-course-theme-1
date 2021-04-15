@@ -393,7 +393,7 @@ Result:
 
 ^^^^
 
-# UNION(?)
+# Other JOINs
 
 ^^^^
 
@@ -405,21 +405,13 @@ Result:
 
 ^^^^
 
-# DELETE/TRUNCATE(?)
+# DELETE
 
 ^^^^
 
 # CREATE/DROP
 
 (primary key/foreign key/referential integrity)
-
-^^^^
-
-# Transactions (?)
-
-^^^^
-
-# CTE (?)
 
 ^^^^
 
