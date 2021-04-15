@@ -35,6 +35,8 @@ Each column in a table is typed, and _must_ contain that type of value. Some com
 - TIMESTAMP (optionally WITH TIME ZONE)
 - CHAR(n): String of fixed length n
 - VARCHAR(n): Variable length string of max size n
+- TEXT: A more flexible data type for strings and text
+- SERIAL: an autoincrementing integer column useful for IDs (PostgreSQL only)
 
 ^^^^
 
@@ -362,7 +364,8 @@ Example:
 
 ```
 SELECT name, job FROM people
-WHERE id=(SELECT author_id FROM publications WHERE title='The Rust Programming Language')
+WHERE id=(SELECT author_id FROM publications
+          WHERE title='The Rust Programming Language')
 ```
 
 Result:
@@ -387,31 +390,155 @@ WHERE publications.title = 'The Rust Programming Language'
 
 Result:
 
-| people.name   | people.job |
+| name          | job        |
 | ------------- | ---------- |
 | Steve Klabnik | Programmer |
 
 ^^^^
 
-# Other JOINs
+# JOIN (cont.)
+
+Besides cross-referencing, JOIN can also be used to combine data, as the resulting table can have any column from either:
+
+Example:
+
+```
+SELECT publications.title, publications.year, people.name
+FROM publications
+JOIN people ON publications.author_id = people.id
+```
+
+Result:
+
+| title                         | year | name          |
+| ----------------------------- | ---- | ------------- |
+| The Rust Programming Language | 2018 | Steve Klabnik |
+| Understanding Computers       | 1987 | Grace Hopper  |
+| Higgs Discovery               | 2013 | Lisa Randall  |
+| Warped Passages               | 2005 | Lisa Randall  |
+
+^^^^
+
+# JOIN and Aggregates
+
+We can combine a JOIN with an aggregate function to generate interesting reports.
+
+Example:
+
+```
+SELECT people.name, COUNT(publications.id)
+FROM people
+JOIN publications ON people.id = publications.author_id
+GROUP by people.name;
+```
+
+Result:
+
+| name          | count |
+| ------------- | ----- |
+| Steve Klabnik | 1     |
+| Grace Hopper  | 1     |
+| Lisa Randall  | 2     |
+
+^^^^
+
+# OUTER JOIN
+
+You may notice a problem in our last example: I'm missing! I wasn't included in the table because I have no publications,
+so I don't appear in the publications table.
+
+Default join is an _INNER JOIN_: it only includes data that matches both sides of the join.
+
+There are three other kinds of _OUTER JOIN_ that include missing data:
+
+- LEFT JOIN: Includes all of the left table + matching data from both
+- RIGHT JOIN: Includes all of the right table + matching data
+- FULL JOIN: Includes all data from _both_ sides of the table
+
+^^^^
+
+# OUTER JOIN (cont.)
+
+So we can fix our previous query by instead using a LEFT JOIN to make sure I don't get left out:
+
+Example:
+
+```
+SELECT people.name, COUNT(publications.id)
+FROM people
+LEFT JOIN publications 
+ON people.id = publications.author_id
+GROUP BY people.name;
+```
+
+Returns:
+
+| name           | count |
+| -------------- | ----- |
+| Annaia Danvers | 0     |
+| Steve Klabnik  | 1     |
+| Grace Hopper   | 1     |
+| Lisa Randall   | 2     |
 
 ^^^^
 
 # INSERT
 
+INSERT is the *create* part of our CRUD operations. It lets you insert new row into the table.
+
+INSERT expects an INTO clause indicating the table (and optionally which columns in the table) we're inserting our data,
+and a VALUES clause that contains an array of the values to insert in those columns.
+
+Example:
+
+```
+INSERT INTO people (name, job, alive) 
+VALUES ('Bozo','Clown',TRUE)
+```
+
 ^^^^
 
 # UPDATE
+
+UPDATE is the next part of our CRUD, letting us set specific columns for a row in our table.
+
+UPDATE has a SET clause, which contains a number of assignment statements, and a WHERE clause, which matches the row 
+to be updated in much the same way WHERE does in a SELECT
+
+Example:
+```
+UPDATE people 
+SET alive = FALSE
+WHERE name = 'Bozo';
+```
 
 ^^^^
 
 # DELETE
 
+And finally, DELETE forms the last part of the CRUD operations, and allows us to delete a row from our table.
+
+DELETE contains a FROM clause indicating which table we're targeting, and a WHERE clause, which again functions much 
+like the WHERE clause in a SELECT.
+
+```
+DELETE FROM people
+WHERE name = 'Bozo';
+```
+
 ^^^^
 
-# CREATE/DROP
+# CREATE
 
 (primary key/foreign key/referential integrity)
+
+^^^^
+
+# ALTER
+
+^^^^
+
+# DROP
 
 ^^^^
 
