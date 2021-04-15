@@ -72,7 +72,7 @@ For example:
 
 ```
 SELECT name, job
-FROM people
+FROM people;
 ```
 
 Returns:
@@ -95,7 +95,7 @@ For example:
 ```
 SELECT id, name
 FROM people
-WHERE job = 'physicist'
+WHERE job = 'physicist';
 ```
 
 Returns:
@@ -128,7 +128,7 @@ You can check for NULL with IS, in the form like:
 
 ```
 SELECT id, name FROM people
-WHERE employer IS NULL
+WHERE employer IS NULL;
 ```
 
 Result:
@@ -145,7 +145,7 @@ IS can also be used with NOT:
 
 ```
 SELECT name, employer FROM people
-WHERE employer IS NOT NULL
+WHERE employer IS NOT NULL;
 ```
 
 Result:
@@ -164,7 +164,7 @@ IS can also be used to check for TRUE and FALSE with BOOLEAN columns:
 
 ```
 SELECT id, name FROM people
-WHERE alive IS FALSE
+WHERE alive IS FALSE;
 ```
 
 Results in:
@@ -181,7 +181,7 @@ IN let's you check for the presence of a value within an array:
 
 ```
 SELECT id, name FROM people
-WHERE job IN ('Programmer', 'Computer Scientist')
+WHERE job IN ('Programmer', 'Computer Scientist');
 ```
 
 Result:
@@ -202,14 +202,14 @@ The begin and end values are inclusive.
 
 ```
 SELECT * FROM people
-WHERE id BETWEEN 2 AND 3
+WHERE id BETWEEN 2 AND 3;
 ```
 
 Result:
 
 | id  | name         | job                | alive | employer |
 | --- | ------------ | ------------------ | ----- | -------- |
-| 2   | Lisa Randal  | Physicist          | true  | null     |
+| 2   | Lisa Randall | Physicist          | true  | null     |
 | 3   | Grace Hopper | Computer Scientist | false | US Navy  |
 
 ^^^^
@@ -239,7 +239,7 @@ For example:
 
 ```
 SELECT name, job FROM people
-ORDER BY job ASC
+ORDER BY job ASC;
 ```
 
 Result:
@@ -261,7 +261,7 @@ It can also be used as COUNT(\*) to simply count the number of rows in the whole
 Example:
 
 ```
-SELECT COUNT(*) FROM people WHERE job = 'Programmer'
+SELECT COUNT(*) FROM people WHERE job = 'Programmer';
 ```
 
 Result:
@@ -277,7 +277,7 @@ Result:
 COUNT ignores NULL results from a column. So for example if we want to find how many people in our table have an employer:
 
 ```
-SELECT COUNT(employer) FROM people
+SELECT COUNT(employer) FROM people;
 ```
 
 Result:
@@ -297,7 +297,7 @@ For example:
 
 ```
 SELECT job, COUNT(*) FROM people
-GROUP BY job
+GROUP BY job;
 ```
 
 Result:
@@ -329,7 +329,7 @@ The DISTINCT keyword can be appended to SELECT to only return unique examples of
 Example:
 
 ```
-SELECT DISTINCT job FROM people
+SELECT DISTINCT job FROM people;
 ```
 
 Result:
@@ -365,7 +365,7 @@ Example:
 ```
 SELECT name, job FROM people
 WHERE id=(SELECT author_id FROM publications
-          WHERE title='The Rust Programming Language')
+          WHERE title='The Rust Programming Language');
 ```
 
 Result:
@@ -385,7 +385,7 @@ Example:
 ```
 SELECT people.name, people.job FROM people
 JOIN publications ON people.id = publications.author_id
-WHERE publications.title = 'The Rust Programming Language'
+WHERE publications.title = 'The Rust Programming Language';
 ```
 
 Result:
@@ -405,7 +405,7 @@ Example:
 ```
 SELECT publications.title, publications.year, people.name
 FROM publications
-JOIN people ON publications.author_id = people.id
+JOIN people ON publications.author_id = people.id;
 ```
 
 Result:
@@ -466,7 +466,7 @@ Example:
 ```
 SELECT people.name, COUNT(publications.id)
 FROM people
-LEFT JOIN publications 
+LEFT JOIN publications
 ON people.id = publications.author_id
 GROUP BY people.name;
 ```
@@ -484,7 +484,7 @@ Returns:
 
 # INSERT
 
-INSERT is the *create* part of our CRUD operations. It lets you insert new row into the table.
+INSERT is the _create_ part of our CRUD operations. It lets you insert new row into the table.
 
 INSERT expects an INTO clause indicating the table (and optionally which columns in the table) we're inserting our data,
 and a VALUES clause that contains an array of the values to insert in those columns.
@@ -492,8 +492,8 @@ and a VALUES clause that contains an array of the values to insert in those colu
 Example:
 
 ```
-INSERT INTO people (name, job, alive) 
-VALUES ('Bozo','Clown',TRUE)
+INSERT INTO people (name, job, alive)
+VALUES ('Bozo','Clown',TRUE);
 ```
 
 ^^^^
@@ -502,12 +502,13 @@ VALUES ('Bozo','Clown',TRUE)
 
 UPDATE is the next part of our CRUD, letting us set specific columns for a row in our table.
 
-UPDATE has a SET clause, which contains a number of assignment statements, and a WHERE clause, which matches the row 
+UPDATE has a SET clause, which contains a number of assignment statements, and a WHERE clause, which matches the row
 to be updated in much the same way WHERE does in a SELECT
 
 Example:
+
 ```
-UPDATE people 
+UPDATE people
 SET alive = FALSE
 WHERE name = 'Bozo';
 ```
@@ -518,7 +519,7 @@ WHERE name = 'Bozo';
 
 And finally, DELETE forms the last part of the CRUD operations, and allows us to delete a row from our table.
 
-DELETE contains a FROM clause indicating which table we're targeting, and a WHERE clause, which again functions much 
+DELETE contains a FROM clause indicating which table we're targeting, and a WHERE clause, which again functions much
 like the WHERE clause in a SELECT.
 
 ```
@@ -528,17 +529,53 @@ WHERE name = 'Bozo';
 
 ^^^^
 
-# CREATE
+# CREATE TABLE
 
-(primary key/foreign key/referential integrity)
+CREATE TABLE is how we can create new tables for new data sets in our database.
+
+A CREATE TABLE statement consists of the name of the table, followed by a list of the columns of that table and their types.
+
+The statement for the _publications_ table looks like this:
+
+```
+CREATE TABLE publications (
+  id SERIAL PRIMARY KEY,
+  title TEXT not NULL,
+  year INTEGER not NULL,
+  author_id INTEGER not NULL,
+  foreign KEY (author_id) references people(id)
+);
+```
 
 ^^^^
 
-# ALTER
+# ALTER TABLE
+
+The ALTER TABLE statment contains a number of subclauses that allow us to modify the columns contained in our table.
+
+It starts with `ALTER TABLE <name of table>` followed by one of these common clauses (and many more):
+
+- ADD _name_ _datatype_: adds a column to the table, specifying its name and data type much as in CREATE
+- DROP COLUMN _name_: removes the column and all data in it from the table
+- ALTER COLUMN _name_ TYPE _datatype_: changes the type of the column and tries to convert any data present.
+- RENAME COLUMN _name_ TO _new_name_: renames a column to a new name
+- RENAME _name_ TO _new_name_: Renames the entire table
 
 ^^^^
 
-# DROP
+# DROP TABLE
+
+The DROP TABLE statement simply deletes a table and all its data entirely from the database.
+
+It expects only the name of the table to be removed.
+
+This often CANNOT be reversed without restoring from backups so be _very_ careful when handling it.
+
+We could remove the _publications_ table like this:
+
+```
+DROP TABLE publications;
+```
 
 ^^^^
 
