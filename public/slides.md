@@ -33,8 +33,6 @@ Each column in a table is typed, and _must_ contain that type of value. Some com
 - INTEGER
 - FLOAT
 - TIMESTAMP (optionally WITH TIME ZONE)
-- CHAR(n): String of fixed length n
-- VARCHAR(n): Variable length string of max size n
 - TEXT: A more flexible data type for strings and text
 - SERIAL: an autoincrementing integer column useful for IDs (PostgreSQL only)
 
@@ -230,6 +228,14 @@ You can use this to match fragments of strings to the data, for instance in our 
 
 ^^^^
 
+# Exercise Time!
+
+We'll now do section 2: SELECT from World on SQLZOO
+
+<https://sqlzoo.net/wiki/SELECT_from_WORLD_Tutorial>
+
+^^^^
+
 # ORDER BY
 
 ORDER BY is an additional clausethat tells the database to sort the result in order according to the columns
@@ -342,6 +348,14 @@ Result:
 
 ^^^^
 
+# Exercise time!
+
+We will now do section 5: SUM and COUNT
+
+<https://sqlzoo.net/wiki/SUM_and_COUNT>
+
+^^^^
+
 # Relations
 
 Of course the most powerful part of databases is they are _relational_. Through the use of several different methods
@@ -373,6 +387,14 @@ Result:
 | name          | job        |
 | ------------- | ---------- |
 | Steve Klabnik | Programmer |
+
+^^^^
+
+# Exercise Time!
+
+Section 4: SELECT within SELECT
+
+<https://sqlzoo.net/wiki/SELECT_within_SELECT_Tutorial>
 
 ^^^^
 
@@ -482,6 +504,63 @@ Returns:
 
 ^^^^
 
+# Exercise time!
+
+Section 6: JOIN
+
+<https://sqlzoo.net/wiki/The_JOIN_operation>
+
+^^^^
+
+# AS and Short Names
+
+Table names and columns can be a bit cumbersome or cryptic to read. The AS keyword lets us give things names.
+
+Example:
+
+```
+SELECT p.name, COUNT(pub.id) AS books
+FROM people AS p
+LEFT JOIN publications pub
+ON p.id = pub.author_id
+GROUP BY p.name;
+```
+
+Result:
+
+| name           | books |
+| -------------- | ----- |
+| Annaia Danvers | 0     |
+| Steve Klabnik  | 1     |
+| Grace Hopper   | 1     |
+| Lisa Randall   | 2     |
+
+^^^^
+
+# Common Table Expression (CTE)
+
+Another handy concept for simplifying code is a "common table expression". CTEs allow you to make an intermediate query
+and assign the result to a name, to be treated as a table in an additional query:
+
+Example:
+```
+With rust_books as (
+  SELECT author_id FROM publications
+  WHERE title LIKE '%Rust%'
+)
+SELECT name, job 
+FROM people, rust_books
+WHERE people.id=rust_books.author_id;
+```
+
+Result:
+
+| name          | job        |
+| ------------- | ---------- |
+| Steve Klabnik | Programmer |
+
+^^^^
+
 # INSERT
 
 INSERT is the _create_ part of our CRUD operations. It lets you insert new row into the table.
@@ -525,6 +604,26 @@ like the WHERE clause in a SELECT.
 ```
 DELETE FROM people
 WHERE name = 'Bozo';
+```
+
+^^^^
+
+# Transactions
+
+An important concept when making changes to the database is 'transactions'. A transaction is a group of operations that 
+the database is instructed *must* all successfully run, or else any changes will be safely rolled back.
+
+Many SQL libraries automatically wrap all queries in transactions for safety, but you can also set one manually by the 
+BEGIN and COMMIT commands:
+
+```
+BEGIN;
+INSERT INTO people (name, job, alive)
+VALUES ('Bozo','Clown',TRUE);
+UPDATE people
+SET alive = FALSE
+WHERE name = 'Bozo';
+COMMIT;
 ```
 
 ^^^^
